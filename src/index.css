@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+:root {
+  --ed-bg: #f9f8f6;      /* warm cream */
+  --ed-fg: #1c1c1c;      /* soft black */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--ed-bg);
+  color: var(--ed-fg);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(28, 28, 28, 0.2);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::selection {
+  background: rgba(28, 28, 28, 0.9);
+  color: var(--ed-bg);
+}
+
+/* ============================================
+   Editorial token classes
+   Monochrome · serif headings · sans body ·
+   sharp corners · hairline borders · no shadows
+   ============================================ */
+
+/* Serif display headings */
+.ed-serif {
+  font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+}
+
+/* Uppercase tracked label */
+.ed-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(28, 28, 28, 0.4);
+}
+
+/* Animated underline link (scaleX right-to-left) */
+.ed-link {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.ed-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s ease;
+}
+.ed-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Primary button: solid soft black, inverts to outline on hover */
+.ed-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  background: var(--ed-fg);
+  color: var(--ed-bg);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ed-btn:hover:not(:disabled) {
+  background: transparent;
+  color: var(--ed-fg);
+  box-shadow: inset 0 0 0 1px var(--ed-fg);
+}
+.ed-btn:active:not(:disabled) {
+  opacity: 0.8;
+}
+.ed-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Ghost button: hairline border, fills on hover */
+.ed-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  background: transparent;
+  color: var(--ed-fg);
+  box-shadow: inset 0 0 0 1px rgba(28, 28, 28, 0.2);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ed-btn-outline:hover:not(:disabled) {
+  background: var(--ed-fg);
+  color: var(--ed-bg);
+  box-shadow: inset 0 0 0 1px var(--ed-fg);
+}
+.ed-btn-outline:active:not(:disabled) {
+  opacity: 0.8;
+}
+.ed-btn-outline:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Quiet text button with underline animation */
+.ed-btn-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(28, 28, 28, 0.6);
+  background: none;
+  border: 0;
+  padding: 0;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+.ed-btn-quiet:hover:not(:disabled) {
+  color: var(--ed-fg);
+}
+.ed-btn-quiet:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Bottom-border input with floating label support */
+.ed-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(28, 28, 28, 0.2);
+  padding: 0.5rem 0;
+  font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+  font-size: 1.25rem;
+  color: var(--ed-fg);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.ed-input:focus {
+  border-bottom-color: var(--ed-fg);
+}
+.ed-input::placeholder {
+  color: rgba(28, 28, 28, 0.3);
+}
+
+/* Small numeric input for inline tables */
+.ed-num {
+  width: 3.5rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(28, 28, 28, 0.2);
+  padding: 0.125rem 0.25rem;
+  text-align: center;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--ed-fg);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.ed-num:focus {
+  border-bottom-color: var(--ed-fg);
+}
+
+/* Filter chip: label type, inverts when active */
+.ed-chip {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  color: rgba(28, 28, 28, 0.4);
+  background: transparent;
+  border: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ed-chip:hover {
+  color: var(--ed-fg);
+}
+.ed-chip-active {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  color: var(--ed-bg);
+  background: var(--ed-fg);
+  border: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Hairline card */
+.ed-card {
+  border: 1px solid rgba(28, 28, 28, 0.1);
+  transition: border-color 0.4s ease, background-color 0.4s ease;
+}
+.ed-card:hover {
+  border-color: rgba(28, 28, 28, 0.4);
+  background-color: rgba(28, 28, 28, 0.02);
+}
+
+/* Hairline divider that deepens on hover */
+.ed-divider {
+  border-bottom: 1px solid rgba(28, 28, 28, 0.1);
+  transition: border-color 0.4s ease;
+}
+.ed-divider:hover {
+  border-bottom-color: rgba(28, 28, 28, 0.4);
+}
+
+/* Editorial select: minimal underline style */
+.ed-select {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(28, 28, 28, 0.2);
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+  color: var(--ed-fg);
+  outline: none;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+.ed-select:focus {
+  border-bottom-color: var(--ed-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-link::after {
+    transition: none;
+  }
+  .ed-btn,
+  .ed-btn-outline,
+  .ed-btn-quiet,
+  .ed-input,
+  .ed-num,
+  .ed-chip,
+  .ed-chip-active,
+  .ed-card,
+  .ed-divider,
+  .ed-select {
+    transition: none;
+  }
+}
