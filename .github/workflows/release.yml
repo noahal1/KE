@@ -81,52 +81,7 @@ jobs:
               --notes "刻 KE ${GITHUB_REF_NAME} — 桌面安装包与 Android APK。"
 
   # ---------------------------------------------------------------------------
-  # 2. 桌面端：Windows / macOS / Linux
-  # ---------------------------------------------------------------------------
-  desktop:
-    needs: [create-release]
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            args: ""
-          - os: macos-latest
-            args: "--target universal-apple-darwin"
-          - os: ubuntu-latest
-            args: ""
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Add macOS universal targets
-        if: matrix.os == 'macos-latest'
-        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
-      - name: Install Linux dependencies (webkit2gtk)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - name: Install frontend dependencies
-        run: npm ci
-      - name: Build desktop app + upload to release
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: ${{ github.ref_name }}
-          releaseName: "KE v__VERSION__"
-          releaseBody: "刻 KE — 本地优先健身训练应用。"
-          releaseDraft: false
-          prerelease: false
-          args: ${{ matrix.args }}
-
-  # ---------------------------------------------------------------------------
-  # 3. Android：APK（通用包 + 按 CPU 架构分包）
+  # 2. Android（优先产物）：APK（通用包 + 按 CPU 架构分包）
   # ---------------------------------------------------------------------------
   android:
     needs: [create-release]
@@ -141,7 +96,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
+      # runner 预装了完整 Android SDK；android-actions/setup-android@v3 会尝试安装
+      # 已下架的 'tools' 包导致失败，这里只需接受 license 即可
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
       - uses: nttld/setup-ndk@v1
         id: ndk
         with:
@@ -191,3 +149,40 @@ jobs:
           name: ke-android-apk
           path: dist-apk/*.apk
           if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # 3. 桌面端：Windows / Linux（macOS 不在发布范围内）
+  # ---------------------------------------------------------------------------
+  desktop:
+    needs: [create-release]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+          - os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux dependencies (webkit2gtk)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build desktop app + upload to release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "KE v__VERSION__"
+          releaseBody: "刻 KE — 本地优先健身训练应用。Android APK 为主要发布产物。"
+          releaseDraft: false
+          prerelease: false
