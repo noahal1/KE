@@ -78,7 +78,7 @@ export default function RestTimerBar({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40">
-      <div className="mx-3 mb-3 flex items-center gap-3 border border-[#1C1C1C] bg-[#F9F8F6] px-4 py-3.5 sm:mx-6 sm:mb-6 sm:gap-6 sm:px-8 sm:py-5">
+      <div className="mx-3 mb-[calc(4.25rem+env(safe-area-inset-bottom))] flex items-center gap-3 border border-[#1C1C1C] bg-[#F9F8F6] px-4 py-3.5 sm:mx-6 sm:gap-6 sm:px-8 sm:py-5 lg:mb-6">
         <span className="ed-serif shrink-0 text-base italic sm:text-lg">{finished ? doneLabel : label}</span>
         <div className="relative h-px min-w-0 flex-1 bg-[#1C1C1C]/10">
           <div

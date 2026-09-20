@@ -38,7 +38,7 @@ function StepButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="flex h-7 w-7 items-center justify-center border border-[#1C1C1C]/20 text-[#1C1C1C]/60 transition-colors hover:border-[#1C1C1C] hover:text-[#1C1C1C] disabled:opacity-30"
+      className="flex h-9 w-9 items-center justify-center border border-[#1C1C1C]/20 text-[#1C1C1C]/60 transition-colors hover:border-[#1C1C1C] hover:text-[#1C1C1C] disabled:opacity-30"
     >
       {label === "+" ? (
         <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />

@@ -19,6 +19,44 @@ body {
   color: var(--ed-fg);
   -webkit-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* Android-first touch hardening: no 300ms tap delay, no text selection on
+   long-press for controls, and comfortable touch targets on coarse pointers. */
+button,
+a,
+input,
+select,
+label {
+  touch-action: manipulation;
+}
+button,
+a,
+.ed-chip,
+.ed-chip-active {
+  -webkit-user-select: none;
+  user-select: none;
+}
+@media (pointer: coarse) {
+  .ed-btn,
+  .ed-btn-outline {
+    min-height: 44px;
+  }
+  .ed-chip,
+  .ed-chip-active {
+    padding: 0.5rem 0.9rem;
+  }
+  /* Keep numeric inputs at ≥16px so the WebView doesn't zoom on focus. */
+  .ed-num {
+    font-size: 1rem;
+  }
+  input,
+  select,
+  textarea {
+    font-size: max(1rem, 1em);
+  }
 }
 
 input,

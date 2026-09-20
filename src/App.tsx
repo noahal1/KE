@@ -23,7 +23,7 @@ export default function App() {
         <div className="hidden lg:block">
           <Sidebar />
         </div>
-        <main className="min-w-0 flex-1 overflow-y-auto">
+        <main className="min-w-0 flex-1 overflow-y-auto pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
           <Routes>
             <Route path="/" element={<PlansPage />} />
             <Route path="/plans" element={<PlansPage />} />

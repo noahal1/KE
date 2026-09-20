@@ -129,7 +129,7 @@ export default function PlanDetailPage() {
 
   if (!plan)
     return (
-      <div className="bg-[#F9F8F6] px-10 py-12 text-sm text-[#1C1C1C]/60">
+      <div className="bg-[#F9F8F6] px-5 py-8 text-sm text-[#1C1C1C]/60 sm:px-10 sm:py-12">
         {t("common.loading")}
       </div>
     );
