@@ -1,4 +1,4 @@
-// Smoke-tests the FitPlan database layer: runs the real migrations + seed from
+// Smoke-tests the KE database layer: runs the real migrations + seed from
 // src-tauri, then executes every SQL query the frontend uses (with $N params
 // converted to ?) against an in-memory SQLite database.
 const fs = require("fs");

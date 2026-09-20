@@ -1,4 +1,4 @@
-// Smoke-tests the FitPlan metrics library (THEORY.md §5.2): formula anchors,
+// Smoke-tests the KE metrics library (THEORY.md §5.2): formula anchors,
 // property checks and boundary behavior. Runs the TypeScript sources natively
 // under Node's type-stripping (node ≥ 22.6, no build step), mirroring the
 // style of sql-smoke-test.cjs. No new dependencies.

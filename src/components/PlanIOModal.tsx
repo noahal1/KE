@@ -36,9 +36,9 @@ export default function PlanIOModal({ open, plans, onClose, onImported }: Props)
       const bundle = await buildPlanBundle();
       const stamp = new Date().toISOString().slice(0, 10);
       if (kind === "json") {
-        downloadText(`fitplan-plans-${stamp}.json`, bundleToJson(bundle), "application/json");
+        downloadText(`ke-plans-${stamp}.json`, bundleToJson(bundle), "application/json");
       } else {
-        downloadText(`fitplan-plans-${stamp}.csv`, "\uFEFF" + bundleToCsv(bundle), "text/csv");
+        downloadText(`ke-plans-${stamp}.csv`, "\uFEFF" + bundleToCsv(bundle), "text/csv");
       }
     } finally {
       setBusy(false);

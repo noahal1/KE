@@ -9,7 +9,7 @@ const zlib = require("zlib");
 const os = require("os");
 const path = require("path");
 
-const file = process.argv[2] || path.join(os.tmpdir(), "fitplan-bodymap-preview.png");
+const file = process.argv[2] || path.join(os.tmpdir(), "ke-bodymap-preview.png");
 const TH = Number(process.argv[3] || 246);
 const buf = fs.readFileSync(file);
 const width = buf.readUInt32BE(16);

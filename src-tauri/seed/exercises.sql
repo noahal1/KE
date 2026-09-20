@@ -1,5 +1,5 @@
 -- ============================================================
--- FitPlan built-in exercise library (bilingual EN/中文)
+-- KE built-in exercise library (bilingual EN/中文)
 -- INSERT OR IGNORE => reseeding never overwrites user data.
 -- Columns: slug, name_en, name_zh, equipment, category, pattern,
 --          primary_muscles, secondary_muscles  (CSV muscle lists)

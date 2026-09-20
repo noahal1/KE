@@ -10,7 +10,7 @@ const zlib = require("zlib");
 const os = require("os");
 const path = require("path");
 
-const file = process.argv[2] || path.join(os.tmpdir(), "fitplan-bodymap-preview.png");
+const file = process.argv[2] || path.join(os.tmpdir(), "ke-bodymap-preview.png");
 const buf = fs.readFileSync(file);
 if (buf.readUInt32BE(12) !== 0x49484452) throw new Error("not a PNG (no IHDR)");
 const width = buf.readUInt32BE(16);

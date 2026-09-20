@@ -44,7 +44,7 @@ export default function Sidebar() {
   return (
     <div className="flex h-full w-60 shrink-0 flex-col border-r border-[#1C1C1C]/10 bg-[#F9F8F6]">
       <div className="px-8 pb-10 pt-9">
-        <span className="ed-serif text-lg tracking-[0.3em] uppercase">FitPlan</span>
+        <span className="ed-serif text-lg tracking-[0.3em] uppercase">KE</span>
         <div className="mt-2 text-[0.65rem] tracking-[0.2em] uppercase text-[#1C1C1C]/40">
           Training Journal
         </div>

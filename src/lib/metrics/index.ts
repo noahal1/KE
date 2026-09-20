@@ -1,4 +1,4 @@
-// FitPlan metrics library — pure functions, no React, no SQL (THEORY.md §5.1).
+// KE metrics library — pure functions, no React, no SQL (THEORY.md §5.1).
 //
 // Layers:
 //   intensity  — RPE↔RIR, e1RM (Epley/Brzycki), %1RM prescriptions   (§1)

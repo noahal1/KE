@@ -1,5 +1,5 @@
 /**
- * Maps FitPlan's built-in exercise slugs to animation GIFs from the open
+ * Maps KE's built-in exercise slugs to animation GIFs from the open
  * dataset https://github.com/hasaneyldrm/exercises-dataset (1,324 exercises,
  * each with a 180x180 animation GIF).
  *
@@ -9,7 +9,7 @@
  * and keep the attribution visible in the UI.
  *
  * Usage:  node scripts/fetch-exercise-gifs.cjs
- * Output: fitplan/src/data/exercise-gifs.json  (slug -> gif url, only matches)
+ * Output: src/data/exercise-gifs.json  (slug -> gif url, only matches)
  */
 const fs = require("fs");
 const path = require("path");
@@ -86,7 +86,7 @@ function score(query, candidate) {
   // every shared token is a strong signal; missing tokens only mildly penalized
   s += covered * 4;
   s -= Math.min(qT.length - covered, 4) * 3;
-  // synonym bonuses (FitPlan term -> dataset term)
+  // synonym bonuses (KE term -> dataset term)
   const SYN = [
     ["ez bar", "ez barbell"],
     ["lat pulldown", "pulldown"],
@@ -143,7 +143,7 @@ function score(query, candidate) {
   return s;
 }
 
-// Manual overrides for FitPlan slugs whose best fuzzy match is wrong or
+// Manual overrides for KE slugs whose best fuzzy match is wrong or
 // missing. Key: slug, value: exact dataset exercise name.
 const MANUAL = {
   "bb-conventional-deadlift": "barbell deadlift",
@@ -161,7 +161,7 @@ const MANUAL = {
   "db-reverse-lunge": "dumbbell contralateral forward lunge",
   "db-walking-lunge-db": "dumbbell contralateral forward lunge",
   "db-lunge-db": "dumbbell contralateral forward lunge",
-  // FitPlan variations with no dataset equivalent — leave null (no gif)
+  // KE variations with no dataset equivalent — leave null (no gif)
   "bb-hang-clean": null,
   "bb-clean-and-jerk": null,
   "bb-bulgarian-split-squat-bb": null,

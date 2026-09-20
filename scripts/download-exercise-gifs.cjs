@@ -12,7 +12,7 @@
  * exist with a non-zero size, so re-running only fills gaps.
  *
  * Usage:  node scripts/download-exercise-gifs.cjs
- * Output: fitplan/public/gifs/videos/<id>.gif
+ * Output: public/gifs/videos/<id>.gif
  */
 const fs = require("fs");
 const path = require("path");
@@ -40,7 +40,7 @@ function fetchBuffer(url, redirects = 5) {
   return new Promise((resolve, reject) => {
     const req = https.get(
       url,
-      { headers: { "User-Agent": "fitplan-gif-fetch/1.0" } },
+      { headers: { "User-Agent": "ke-gif-fetch/1.0" } },
       (res) => {
         if (
           res.statusCode >= 300 &&

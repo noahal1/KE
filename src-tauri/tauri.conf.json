@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "FitPlan",
-  "version": "0.1.0",
-  "identifier": "com.noaha.fitplan",
+  "productName": "KE",
+  "version": "0.2.0",
+  "identifier": "com.noaha.ke",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "FitPlan · 健身计划",
+        "title": "刻 KE · 健身计划",
         "width": 1280,
         "height": 800,
         "minWidth": 960,

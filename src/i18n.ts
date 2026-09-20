@@ -5,7 +5,7 @@ import type { Lang } from "./types";
 const resources = {
   zh: {
     translation: {
-      appName: "FitPlan 健身计划",
+      appName: "刻 KE · 健身计划",
       nav: {
         library: "动作库",
         plans: "训练计划",
@@ -353,7 +353,8 @@ const resources = {
         body: "身体数据",
         units: "重量单位",
         about: "关于",
-        aboutText: "FitPlan —— 本地优先的健身计划软件，数据保存在本机 SQLite 数据库。",
+        aboutText: "刻（KE）—— 本地优先的健身训练应用，数据保存在本机 SQLite 数据库。",
+        github: "GitHub 仓库 · noahal1/KE",
         dataFile: "数据库位置",
         soundCue: "休息结束提示音",
       },
@@ -361,7 +362,7 @@ const resources = {
   },
   en: {
     translation: {
-      appName: "FitPlan",
+      appName: "KE",
       nav: {
         library: "Exercise Library",
         plans: "Plans",
@@ -710,7 +711,8 @@ const resources = {
         units: "Weight Unit",
         about: "About",
         aboutText:
-          "FitPlan — a local-first fitness planner. All data is stored in a SQLite database on your machine.",
+          "KE — a local-first fitness planner. All data is stored in a SQLite database on your machine.",
+        github: "GitHub repo · noahal1/KE",
         dataFile: "Database file",
         soundCue: "Rest-finished sound cue",
       },

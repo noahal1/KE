@@ -10,8 +10,8 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const tmp = os.tmpdir();
-const htmlPath = path.join(tmp, "fitplan-swatch-test.html");
-const pngPath = path.join(tmp, "fitplan-swatch-test.png");
+const htmlPath = path.join(tmp, "ke-swatch-test.html");
+const pngPath = path.join(tmp, "ke-swatch-test.png");
 
 const html =
   '<!doctype html><html><body style="margin:0;background:#fff">' +
@@ -38,7 +38,7 @@ const args = [
   "--no-first-run",
   "--no-default-browser-check",
   "--force-device-scale-factor=1",
-  "--user-data-dir=" + path.join(tmp, "fitplan-chrome-profile"),
+  "--user-data-dir=" + path.join(tmp, "ke-chrome-profile"),
   "--hide-scrollbars",
   "--window-size=240,60",
   "--screenshot=" + pngPath,

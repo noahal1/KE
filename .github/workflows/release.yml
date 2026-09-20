@@ -1,0 +1,187 @@
+name: Release
+
+# 推送 v* tag 时自动打包并创建 Release：
+#   git tag v0.2.1 && git push origin v0.2.1
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  # 有签名密钥(仓库 secret ANDROID_KEYSTORE_PATH)时 release APK 自动签名；
+  # 没有时额外产出 debug 签名 APK 作为可直接安装的兜底。
+  HAS_ANDROID_SIGNING: ${{ secrets.ANDROID_KEYSTORE_PATH != '' }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 0. 版本一致性校验：四处版本号必须与 tag 一致
+  # ---------------------------------------------------------------------------
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert versions match the tag
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" != "tag" ]]; then
+            echo "Manual run (no tag) — skipping version check."; exit 0
+          fi
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          TS=$(node -p "require('fs').readFileSync('src/version.ts','utf8')" \
+                | grep -oP '(?<=APP_VERSION = ")[^"]+')
+          CONF=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          CARGO=$(grep -m1 '^version' src-tauri/Cargo.toml | tr -d ' "' | cut -d= -f2)
+          LOCK=$(awk '/^name = "ke"$/{getline; print; exit}' src-tauri/Cargo.lock \
+                 | tr -d ' "' | cut -d= -f2)
+          echo "tag=$TAG package=$PKG version.ts=$TS tauri.conf=$CONF cargo=$CARGO lock=$LOCK"
+          fail=0
+          for v in "$PKG" "$TS" "$CONF" "$CARGO" "$LOCK"; do
+            if [[ "$v" != "$TAG" ]]; then fail=1; echo "MISMATCH: $v != $TAG"; fi
+          done
+          exit $fail
+
+  # ---------------------------------------------------------------------------
+  # 1. 前端冒烟测试（秒级，不需要 UI）
+  # ---------------------------------------------------------------------------
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Type check + smoke tests
+        run: |
+          npx tsc --noEmit
+          node scripts/sql-smoke-test.cjs
+          node scripts/metrics-smoke-test.mjs
+
+  # ---------------------------------------------------------------------------
+  # 1.5 预创建 Release，避免三个桌面矩阵任务并发建 Release 的竞态
+  # ---------------------------------------------------------------------------
+  create-release:
+    needs: [check-version, smoke]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release if missing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" \
+              --title "KE ${GITHUB_REF_NAME#v}" \
+              --notes "刻 KE ${GITHUB_REF_NAME} — 桌面安装包与 Android APK。"
+
+  # ---------------------------------------------------------------------------
+  # 2. 桌面端：Windows / macOS / Linux
+  # ---------------------------------------------------------------------------
+  desktop:
+    needs: [create-release]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: ""
+          - os: macos-latest
+            args: "--target universal-apple-darwin"
+          - os: ubuntu-latest
+            args: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Add macOS universal targets
+        if: matrix.os == 'macos-latest'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - name: Install Linux dependencies (webkit2gtk)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build desktop app + upload to release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "KE v__VERSION__"
+          releaseBody: "刻 KE — 本地优先健身训练应用。"
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
+
+  # ---------------------------------------------------------------------------
+  # 3. Android：APK（通用包 + 按 CPU 架构分包）
+  # ---------------------------------------------------------------------------
+  android:
+    needs: [create-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r27c
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build Android APK
+        env:
+          NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.ANDROID_KEYSTORE_PATH }}
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: npx tauri android build
+      - name: Collect release APKs
+        run: |
+          mkdir -p dist-apk
+          find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" -exec cp {} dist-apk/ \;
+          ls -la dist-apk
+      # 没配签名密钥时，release APK 未签名装不上手机；补一个 debug 签名包兜底
+      - name: Build debug-signed APK (installable fallback)
+        if: env.HAS_ANDROID_SIGNING != 'true'
+        env:
+          NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: npx tauri android build --debug
+      - name: Collect debug APKs
+        if: env.HAS_ANDROID_SIGNING != 'true'
+        run: |
+          find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" -exec cp {} dist-apk/ \;
+      - name: Upload APKs to release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" dist-apk/*.apk --clobber
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ke-android-apk
+          path: dist-apk/*.apk
+          if-no-files-found: error

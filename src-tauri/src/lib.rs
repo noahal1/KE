@@ -1,6 +1,6 @@
 use tauri_plugin_sql::{Migration, MigrationKind};
 
-// Core database schema for FitPlan
+// Core database schema for KE
 const MIGRATION_1_SCHEMA: &str = r#"
     CREATE TABLE exercises (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -163,7 +163,53 @@ fn build_migrations() -> Vec<Migration> {
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
+/// One-time migration: the app identifier changed from com.noaha.fitplan to
+/// com.noaha.ke (v0.2.0). Copy the old per-user app-data directory (containing
+/// the SQLite database and its sidecar files) into the new location so
+/// existing users keep their history. Best-effort: on any failure the new
+/// directory simply starts fresh.
+fn migrate_legacy_data_dir() {
+    let Some(base) = data_root() else { return };
+    let old_dir = base.join("com.noaha.fitplan");
+    let new_dir = base.join("com.noaha.ke");
+    if !old_dir.exists() || new_dir.exists() {
+        return;
+    }
+    let _ = std::fs::create_dir_all(&new_dir);
+    for name in ["fitplan.db", "fitplan.db-wal", "fitplan.db-shm"] {
+        let from = old_dir.join(name);
+        if from.exists() {
+            let _ = std::fs::copy(&from, new_dir.join(name));
+        }
+    }
+}
+
+/// Per-user application-data parent directory (mirrors Tauri's identifier-
+/// based data dir convention per platform).
+#[allow(unused_variables)]
+fn data_root() -> Option<std::path::PathBuf> {
+    #[cfg(target_os = "windows")]
+    {
+        std::env::var_os("APPDATA").map(std::path::PathBuf::from)
+    }
+    #[cfg(target_os = "macos")]
+    {
+        std::env::var_os("HOME")
+            .map(|h| std::path::PathBuf::from(h).join("Library/Application Support"))
+    }
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        std::env::var_os("XDG_DATA_HOME")
+            .map(std::path::PathBuf::from)
+            .or_else(|| {
+                std::env::var_os("HOME")
+                    .map(|h| std::path::PathBuf::from(h).join(".local/share"))
+            })
+    }
+}
+
 pub fn run() {
+    migrate_legacy_data_dir();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(

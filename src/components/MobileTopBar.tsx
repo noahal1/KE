@@ -37,7 +37,7 @@ export default function MobileTopBar() {
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between border-b border-[#1C1C1C]/10 bg-[#F9F8F6] px-5 py-3.5 lg:hidden">
       <div>
-        <span className="ed-serif text-base tracking-[0.3em] uppercase">FitPlan</span>
+        <span className="ed-serif text-base tracking-[0.3em] uppercase">KE</span>
         <span className="ml-3 text-[0.55rem] tracking-[0.2em] uppercase text-[#1C1C1C]/40">
           Training Journal
         </span>

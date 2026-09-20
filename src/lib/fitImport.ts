@@ -3,7 +3,7 @@
 // Strength-training activity files exported from Garmin Connect carry one
 // `set` message per logged set (repetitions, weight, set_type, and the
 // exercise as a numeric (category, category_subtype) pair). This module turns
-// those messages into FitPlan sessions: grouping consecutive same-exercise
+// those messages into KE sessions: grouping consecutive same-exercise
 // sets, resolving the enum pair to a readable name via the generated tables
 // in data/fit-enums.ts, matching that name against the built-in + custom
 // exercise library (creating custom entries as a fallback), and writing
@@ -278,7 +278,7 @@ export async function parseStrengthFile(
 
     // `weight` is profile-scaled to kg (scale 16) by the parser; the display
     // unit only describes device UI preference. Bodyweight sets report no
-    // weight → stored as 0, matching FitPlan's own convention.
+    // weight → stored as 0, matching KE's own convention.
     const w = rs.weight;
     const weightKg =
       typeof w === "number" && w > 0 && w < MAX_SANE_WEIGHT_KG ? w : 0;

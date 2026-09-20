@@ -1,4 +1,4 @@
-// Attaches to the running FitPlan app via WebView2 remote debugging (CDP),
+// Attaches to the running KE app via WebView2 remote debugging (CDP),
 // walks every route, exercises the real SQL plugin through window.__TAURI__,
 // and reports console errors / unhandled exceptions.
 const http = require("http");

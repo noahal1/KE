@@ -137,7 +137,7 @@ function bar(sets, mrv) {
 
 const fmt1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
 
-console.log(`FitPlan 疲劳报告 — 合成 5 周训练块(PPL × 5,W34–W38)`);
+console.log(`KE 疲劳报告 — 合成 5 周训练块(PPL × 5,W34–W38)`);
 console.log(`基线:每周有效组(归一化分摊,1 组 = 1 份)│ 时间:ISO 周,周一为首日`);
 console.log(`RPE 覆盖率: ${rpeCoverage(sets).n_with_rpe}/${rpeCoverage(sets).n_total} 组记录了 RPE\n`);
 
