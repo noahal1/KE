@@ -12,9 +12,9 @@ permissions:
   contents: write
 
 env:
-  # 有签名密钥(仓库 secret ANDROID_KEYSTORE_PATH)时 release APK 自动签名；
+  # 配置了 ANDROID_KEYSTORE_BASE64 等 secrets 时 release APK 正式签名；
   # 没有时额外产出 debug 签名 APK 作为可直接安装的兜底。
-  HAS_ANDROID_SIGNING: ${{ secrets.ANDROID_KEYSTORE_PATH != '' }}
+  HAS_ANDROID_SIGNING: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -151,10 +151,16 @@ jobs:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
       - name: Install frontend dependencies
         run: npm ci
+      - name: Decode signing keystore from secrets
+        if: env.HAS_ANDROID_SIGNING == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/ke.keystore"
+          echo "TAURI_ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/ke.keystore" >> "$GITHUB_ENV"
       - name: Build Android APK
         env:
           NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
-          TAURI_ANDROID_KEYSTORE_PATH: ${{ secrets.ANDROID_KEYSTORE_PATH }}
           TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}

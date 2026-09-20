@@ -70,6 +70,30 @@ npx tauri build              # 桌面安装包
 npx tauri android build      # Android(需 SDK/NDK,产物在 src-tauri/gen/android/app/build/outputs/)
 ```
 
+### Android 签名
+
+CI 从仓库 secrets 读取签名密钥库为 release APK 签名(未配置时 workflow 会
+额外产出 debug 签名 APK 兜底,可安装但不可上架):
+
+| Secret | 内容 |
+| --- | --- |
+| `ANDROID_KEYSTORE_BASE64` | 密钥库文件的 base64(`signing/ke.keystore.b64`) |
+| `ANDROID_KEYSTORE_PASSWORD` | 密钥库密码 |
+| `ANDROID_KEY_ALIAS` | 密钥别名(本地为 `ke`) |
+| `ANDROID_KEY_PASSWORD` | 密钥密码 |
+
+本地重新生成密钥库(JDK 自带 keytool):
+
+```bash
+keytool -genkeypair -v -keystore signing/ke.keystore -alias ke \
+  -keyalg RSA -keysize 4096 -validity 10950 \
+  -dname "CN=KE, O=noahal1, C=CN"
+base64 -w0 signing/ke.keystore > signing/ke.keystore.b64   # 粘贴进 secret
+```
+
+`signing/` 已被 .gitignore 排除,密钥库只存在于本机与 GitHub secrets。
+**务必另存一份离线备份**:丢失后无法再给同一应用发签名更新。
+
 ## 肌肉部位标注
 
 每个动作都会显示训练部位标签(主/次肌群,已汉化),数据来自数据库的

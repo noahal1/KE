@@ -26,3 +26,7 @@ dist-ssr
 # Exercise GIF media (© Gym visual, see scripts/download-exercise-gifs.cjs).
 # Not redistributed via git — restore with: npm run fetch-gifs
 public/gifs/
+
+# Android release signing keystore — NEVER commit. Local backup only.
+# GitHub Actions reads it from the ANDROID_KEYSTORE_BASE64 secret instead.
+signing/
